@@ -48,6 +48,18 @@ open class RowOf<T>: BaseRow where T: Equatable {
             }
         }
     }
+  
+    override var hiddenCache: Bool {
+      didSet {
+        guard let form = section?.form else { return }
+        guard let t = tag else { return }
+        if let rowObservers = form.rowObservers[t]?[.hidden] {
+          for rowObserver in rowObservers {
+            (rowObserver as? Hidable)?.evaluateHidden()
+          }
+        }
+      }
+    }
 
     /// The typed value of this row.
     open var value: T? {
@@ -99,7 +111,7 @@ open class RowOf<T>: BaseRow where T: Equatable {
     }
     
     /// Resets the value of the row. Setting it's value to it's reset value.
-    public func resetRowValue() {
+    public override func resetRowValue() {
         value = resetValue
     }
 
@@ -130,7 +142,10 @@ open class RowOf<T>: BaseRow where T: Equatable {
         validationErrors.removeAll()
         rules.removeAll()
     }
-
+ 
+    public override var isRowValueChanged: Bool {
+     value != resetValue
+    }
 }
 
 /// Generic class that represents an Eureka row.

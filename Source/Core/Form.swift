@@ -151,6 +151,21 @@ public final class Form {
     var rowsByTag = [String: BaseRow]()
     var tagToValues = [String: Any]()
     lazy var kvoWrapper: KVOWrapper = { [unowned self] in return KVOWrapper(form: self) }()
+ 
+    public var isFormDirty: Bool {
+     for row in rows {
+      if row.isRowValueChanged {
+       return true
+      }
+     }
+     return false
+    }
+ 
+    public func reset() {
+     rows.forEach {
+      $0.resetRowValue()
+     }
+    }
 }
 
 extension Form: Collection {
